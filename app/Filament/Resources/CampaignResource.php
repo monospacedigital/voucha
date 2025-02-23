@@ -39,12 +39,24 @@ class CampaignResource extends Resource
                     ->default(1.00)
                     ->minValue(1)
                     ->step(0.01),
-                Forms\Components\TextInput::make('target_transaction_types')
-                    ->required()
-                    ->helperText('Comma-separated list of transaction types'),
-                Forms\Components\TextInput::make('target_user_segments')
-                    ->required()
-                    ->helperText('Comma-separated list of user segments'),
+                Forms\Components\Select::make('target_transaction_types')
+                    ->multiple()
+                    ->options([
+                        'airtime' => 'Airtime',
+                        'bill_payment' => 'Bill Payment',
+                        'transfer' => 'Transfer',
+                        'etc' => 'Other',
+                    ])
+                    ->required(),
+                Forms\Components\Select::make('target_user_segments')
+                    ->multiple()
+                    ->options([
+                        'new_users' => 'New Users',
+                        'silver' => 'Silver Tier',
+                        'gold' => 'Gold Tier',
+                        'platinum' => 'Platinum Tier',
+                    ])
+                    ->required(),
             ]);
     }
 

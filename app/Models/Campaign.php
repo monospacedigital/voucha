@@ -32,4 +32,13 @@ class Campaign extends Model
     {
         return $this->hasMany(Point::class, 'campaign_id');
     }
+
+    public function appliesTo(Transaction $transaction): bool
+    {
+        $transactionTypes = explode(',', $this->target_transaction_types);
+        $userSegments = explode(',', $this->target_user_segments);
+
+        return in_array($transaction->transaction_type, $transactionTypes) &&
+               in_array($transaction->user->segment, $userSegments);
+    }
 }

@@ -41,7 +41,8 @@ class TransactionResource extends Resource
                     ->required()
                     ->numeric()
                     ->minValue(0)
-                    ->step(0.01),
+                    ->step(0.01)
+                    ->prefix('₦'),
                 Forms\Components\DateTimePicker::make('transaction_date')
                     ->required(),
                 Forms\Components\Select::make('status')

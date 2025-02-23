@@ -61,7 +61,7 @@ class TransactionChart extends ChartWidget
                 'y' => [
                     'beginAtZero' => true,
                     'ticks' => [
-                        'callback' => "function(value) { return '$' + value.toLocaleString() }",
+                        'callback' => "function(value) { return '₦' + value.toLocaleString() }",
                     ],
                 ],
             ],

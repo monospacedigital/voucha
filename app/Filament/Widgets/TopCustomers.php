@@ -35,7 +35,7 @@ class TopCustomers extends BaseWidget
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('total_spent')
-                    ->money()
+                    ->money('NGN')
                     ->label('Total Spent')
                     ->sortable(),
             ]);

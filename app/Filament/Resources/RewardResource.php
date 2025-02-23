@@ -67,7 +67,7 @@ class RewardResource extends Resource
                 Tables\Columns\TextColumn::make('reward_type')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('reward_value')
-                    ->money('USD')
+                    ->money('NGN')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
