@@ -12,6 +12,7 @@ class UserTierDistribution extends ChartWidget
 
     protected static ?string $heading = 'User Tier Distribution';
     protected static ?int $sort = 3;
+    protected static ?string $maxHeight = '250px';
 
     protected function getData(): array
     {
