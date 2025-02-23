@@ -75,4 +75,23 @@ class User extends Authenticatable
     {
         return $this->hasMany(Point::class);
     }
+
+    public function calculateAndUpdateLoyaltyTier(): void
+    {
+        $totalPoints = $this->points()
+            ->where('point_type', 'earned')
+            ->sum('point_value') -
+            $this->points()
+            ->where('point_type', 'redeemed')
+            ->sum('point_value');
+
+        $appropriateTier = LoyaltyTier::where('points_required', '<=', $totalPoints)
+            ->orderBy('points_required', 'desc')
+            ->first();
+
+        if ($appropriateTier && $this->loyalty_tier_id !== $appropriateTier->loyalty_tier_id) {
+            $this->loyalty_tier_id = $appropriateTier->loyalty_tier_id;
+            $this->save();
+        }
+    }
 }

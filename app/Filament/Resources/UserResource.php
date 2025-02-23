@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -126,19 +127,62 @@ class UserResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('loyalty_tier')
-                    ->relationship('loyaltyTier', 'tier_name'),
+                Tables\Filters\SelectFilter::make('loyalty_tier_id')
+                    ->relationship('loyaltyTier', 'tier_name')
+                    ->label('Loyalty Tier'),
                 Tables\Filters\Filter::make('high_value')
                     ->query(fn ($query) => $query->whereHas('transactions', function ($query) {
-                        $query->groupBy('user_id')
+                        $query->select('user_id')
+                            ->groupBy('user_id')
                             ->havingRaw('SUM(transaction_amount) > ?', [1000000]);
                     }))
-                    ->label('High Value Customers'),
-                Tables\Filters\Filter::make('active')
-                    ->query(fn ($query) => $query->whereHas('transactions', function ($query) {
-                        $query->where('transaction_date', '>=', now()->subMonths(3));
-                    }))
-                    ->label('Active Users (Last 3 Months)'),
+                    ->label('High Value Users'),
+                Tables\Filters\Filter::make('registration_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('registered_from'),
+                        Forms\Components\DatePicker::make('registered_until'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when(
+                                $data['registered_from'],
+                                fn($query) => $query->whereDate('registration_date', '>=', $data['registered_from']),
+                            )
+                            ->when(
+                                $data['registered_until'],
+                                fn($query) => $query->whereDate('registration_date', '<=', $data['registered_until']),
+                            );
+                    }),
+                Tables\Filters\SelectFilter::make('points_range')
+                    ->options([
+                        'low' => '0 - 1,000 points',
+                        'medium' => '1,001 - 5,000 points',
+                        'high' => '5,001+ points'
+                    ])
+                    ->query(function (Builder $query, $state) {
+                        if (empty($state)) {
+                            return $query;
+                        }
+
+                        return match ($state) {
+                            'low' => $query->whereHas('points', function ($query) {
+                                $query->select('user_id')
+                                    ->groupBy('user_id')
+                                    ->havingRaw('SUM(CASE WHEN point_type = "earned" THEN point_value ELSE -point_value END) <= ?', [1000]);
+                            }),
+                            'medium' => $query->whereHas('points', function ($query) {
+                                $query->select('user_id')
+                                    ->groupBy('user_id')
+                                    ->havingRaw('SUM(CASE WHEN point_type = "earned" THEN point_value ELSE -point_value END) BETWEEN ? AND ?', [1001, 5000]);
+                            }),
+                            'high' => $query->whereHas('points', function ($query) {
+                                $query->select('user_id')
+                                    ->groupBy('user_id')
+                                    ->havingRaw('SUM(CASE WHEN point_type = "earned" THEN point_value ELSE -point_value END) > ?', [5000]);
+                            }),
+                            default => $query
+                        };
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

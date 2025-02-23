@@ -187,5 +187,8 @@ class CustomerLoyaltySeeder extends Seeder
                 ]);
             }
         }
+
+        // Recalculate tiers for all users
+        $this->command->call('users:recalculate-tiers');
     }
 }
