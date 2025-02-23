@@ -6,37 +6,38 @@ use App\Models\User;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class TopCustomers extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 5;
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
+        $startDate = $this->filters['startDate'] ?? now()->subMonth();
+        $endDate = $this->filters['endDate'] ?? now();
+
         return $table
             ->query(
-                User::select('users.*')
-                    ->selectRaw('SUM(CASE WHEN points.point_type = "earned" THEN points.point_value ELSE 0 END) as points_earned')
-                    ->selectRaw('SUM(CASE WHEN points.point_type = "redeemed" THEN points.point_value ELSE 0 END) as points_redeemed')
-                    ->leftJoin('points', 'users.id', '=', 'points.user_id')
-                    ->groupBy('users.id')
-                    ->orderByRaw('(points_earned - points_redeemed) DESC')
-                    ->limit(10)
+                User::query()
+                    ->join('transactions', 'users.id', '=', 'transactions.user_id')
+                    ->whereBetween('transactions.transaction_date', [$startDate, $endDate])
+                    ->groupBy('users.id', 'users.name', 'users.email')
+                    ->selectRaw('users.*, SUM(transactions.transaction_amount) as total_spent')
+                    ->orderByDesc('total_spent')
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('loyaltyTier.tier_name')
-                    ->label('Tier'),
-                Tables\Columns\TextColumn::make('points_earned')
-                    ->label('Points Earned')
-                    ->numeric(),
-                Tables\Columns\TextColumn::make('points_redeemed')
-                    ->label('Points Redeemed')
-                    ->numeric(),
-                Tables\Columns\TextColumn::make('registration_date')
-                    ->dateTime(),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('total_spent')
+                    ->money()
+                    ->label('Total Spent')
+                    ->sortable(),
             ]);
     }
 }
