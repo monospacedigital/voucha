@@ -18,7 +18,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-20">
                     <div class="flex items-center">
-                        <span class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Voucha</span>
+                        <img src="{{ asset('images/voucher-logo.png') }}" alt="Voucha Logo" class="h-12 ml-2">
                     </div>
                     <div class="hidden md:flex items-center space-x-8">
                         <a href="#features" class="text-gray-600 hover:text-indigo-600 transition duration-300">Features</a>
