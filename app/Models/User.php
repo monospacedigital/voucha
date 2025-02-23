@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -21,6 +23,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'brand_user_id',
+        'phone_number',
+        'first_name',
+        'last_name',
+        'registration_date',
+        'loyalty_tier_id',
     ];
 
     /**
@@ -38,11 +46,33 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'registration_date' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * Get the user's loyalty tier
+     */
+    public function loyaltyTier(): BelongsTo
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(LoyaltyTier::class, 'loyalty_tier_id');
+    }
+
+    /**
+     * Get the user's transactions
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Get the user's points
+     */
+    public function points(): HasMany
+    {
+        return $this->hasMany(Point::class);
     }
 }

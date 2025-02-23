@@ -366,15 +366,32 @@
         <script>
             gsap.registerPlugin(ScrollTrigger);
 
+            // Force scroll to top on page load
+            window.onbeforeunload = function () {
+                window.scrollTo(0, 0);
+            };
+
             // Wait for page load before starting animations
             window.addEventListener('load', () => {
-                // Initial hero animation with delay
+                // Ensure we're at the top
+                window.scrollTo(0, 0);
+
+                // Initial hero animation without y-transform
                 gsap.from('.hero-section', {
                     duration: 1.2,
-                    y: 100,
                     opacity: 0,
                     ease: 'power3.out',
                     delay: 0.5
+                });
+
+                // Animate hero content separately
+                gsap.from('.hero-section .space-y-5 > *', {
+                    duration: 1.2,
+                    y: 40,
+                    opacity: 0,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 0.7
                 });
 
                 // Animate sections on scroll
