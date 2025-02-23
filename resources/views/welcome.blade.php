@@ -8,6 +8,9 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+        <!-- Add GSAP -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     </head>
     <body class="antialiased bg-gradient-to-b from-gray-50 to-white">
         <!-- Navigation -->
@@ -37,7 +40,7 @@
         </nav>
 
         <!-- Hero Section -->
-        <div class="relative overflow-hidden bg-gradient-to-b from-white to-gray-50 pt-32 pb-20 lg:pt-40 lg:pb-28">
+        <div class="hero-section relative overflow-hidden bg-gradient-to-b from-white to-gray-50 pt-32 pb-20 lg:pt-40 lg:pb-28">
             <div class="absolute inset-0">
                 <div class="absolute inset-0 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.indigo.100),white)] opacity-20"></div>
             </div>
@@ -101,7 +104,7 @@
         </div>
 
         <!-- Features Section -->
-        <div id="features" class="py-24 bg-white">
+        <div id="features" class="features-section py-24 bg-white opacity-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center">
                     <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
@@ -160,7 +163,7 @@
         </div>
 
         <!-- Use Cases Section -->
-        <div id="use-cases" class="py-24 bg-gray-50">
+        <div id="use-cases" class="use-cases-section py-24 bg-gray-50 opacity-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center">
                     <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
@@ -209,7 +212,7 @@
         </div>
 
         <!-- How It Works Section -->
-        <div id="how-it-works" class="py-24 bg-white">
+        <div id="how-it-works" class="how-it-works-section py-24 bg-white opacity-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center">
                     <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
@@ -252,7 +255,7 @@
         </div>
 
         <!-- Stats Section -->
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600">
+        <div class="stats-section bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0">
             <div class="max-w-7xl mx-auto py-12 px-4 sm:py-16 sm:px-6 lg:px-8 lg:py-20">
                 <div class="max-w-4xl mx-auto text-center">
                     <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
@@ -292,7 +295,7 @@
         </div>
 
         <!-- CTA Section -->
-        <div class="relative bg-white">
+        <div class="cta-section relative bg-white opacity-0">
             <div class="absolute left-0 right-0 h-1/2 bg-gray-50"></div>
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="max-w-4xl mx-auto">
@@ -317,7 +320,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="bg-gray-50">
+        <footer class="footer-section bg-gray-50 opacity-0">
             <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                     <div>
@@ -358,5 +361,147 @@
                 </div>
             </div>
         </footer>
+
+        <!-- GSAP Animation Script -->
+        <script>
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Wait for page load before starting animations
+            window.addEventListener('load', () => {
+                // Initial hero animation with delay
+                gsap.from('.hero-section', {
+                    duration: 1.2,
+                    y: 100,
+                    opacity: 0,
+                    ease: 'power3.out',
+                    delay: 0.5
+                });
+
+                // Animate sections on scroll
+                const sections = [
+                    '.features-section',
+                    '.use-cases-section',
+                    '.how-it-works-section',
+                    '.stats-section',
+                    '.cta-section',
+                    '.footer-section'
+                ];
+
+                sections.forEach(section => {
+                    gsap.to(section, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: 'top 60%',
+                            end: 'top 20%',
+                            toggleActions: 'play none none reverse',
+                            markers: false
+                        },
+                        duration: 1.2,
+                        opacity: 1,
+                        y: 0,
+                        ease: 'power3.out'
+                    });
+                });
+
+                // Animate feature cards individually with sequence
+                const featureCards = gsap.utils.toArray('.features-section .relative.group');
+                featureCards.forEach((card, index) => {
+                    gsap.from(card, {
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 70%',
+                            toggleActions: 'play none none reverse',
+                            markers: false
+                        },
+                        duration: 1,
+                        y: 60,
+                        opacity: 0,
+                        ease: 'power3.out',
+                        delay: index * 0.3
+                    });
+                });
+
+                // Animate use cases with individual triggers
+                const useCases = gsap.utils.toArray('.use-cases-section .bg-white');
+                useCases.forEach((card, index) => {
+                    gsap.from(card, {
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 70%',
+                            toggleActions: 'play none none reverse',
+                        },
+                        duration: 1,
+                        y: 60,
+                        opacity: 0,
+                        ease: 'power3.out',
+                        delay: index * 0.3
+                    });
+                });
+
+                // Animate how it works steps with individual triggers
+                const steps = gsap.utils.toArray('.how-it-works-section .flex-col');
+                steps.forEach((step, index) => {
+                    gsap.from(step, {
+                        scrollTrigger: {
+                            trigger: step,
+                            start: 'top 70%',
+                            toggleActions: 'play none none reverse',
+                        },
+                        duration: 1,
+                        y: 60,
+                        opacity: 0,
+                        ease: 'power3.out',
+                        delay: index * 0.3
+                    });
+                });
+
+                // Animate stats with individual triggers
+                const stats = gsap.utils.toArray('.stats-section .flex-col');
+                stats.forEach((stat, index) => {
+                    gsap.from(stat, {
+                        scrollTrigger: {
+                            trigger: stat,
+                            start: 'top 70%',
+                            toggleActions: 'play none none reverse',
+                        },
+                        duration: 1,
+                        y: 40,
+                        opacity: 0,
+                        ease: 'power3.out',
+                        delay: index * 0.3
+                    });
+                });
+
+                // Special animation for CTA
+                gsap.from('.cta-section .rounded-2xl', {
+                    scrollTrigger: {
+                        trigger: '.cta-section',
+                        start: 'top 70%',
+                        toggleActions: 'play none none reverse',
+                    },
+                    duration: 1.2,
+                    scale: 0.9,
+                    opacity: 0,
+                    ease: 'power3.out'
+                });
+
+                // Footer links animation with individual triggers
+                const footerColumns = gsap.utils.toArray('.footer-section .grid > div');
+                footerColumns.forEach((column, index) => {
+                    gsap.from(column, {
+                        scrollTrigger: {
+                            trigger: column,
+                            start: 'top 80%',
+                            toggleActions: 'play none none reverse',
+                        },
+                        duration: 1,
+                        y: 40,
+                        opacity: 0,
+                        ease: 'power3.out',
+                        delay: index * 0.2
+                    });
+                });
+            });
+        </script>
     </body>
 </html>
