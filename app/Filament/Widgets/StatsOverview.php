@@ -24,8 +24,8 @@ class StatsOverview extends BaseWidget
         $usersQuery = User::query();
 
         if ($startDate && $endDate) {
-            $query->whereBetween('created_at', [$startDate, $endDate]);
-            $usersQuery->whereBetween('created_at', [$startDate, $endDate]);
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
+            $usersQuery->whereBetween('registration_date', [$startDate, $endDate]);
         }
 
         return [
@@ -41,7 +41,7 @@ class StatsOverview extends BaseWidget
                 ->chart([17, 16, 14, 15, 14, 13, 12])
                 ->color('info'),
 
-            Stat::make('Total Revenue', '₦' . number_format($query->sum('amount'), 2))
+            Stat::make('Total Revenue', '₦' . number_format($query->sum('transaction_amount'), 2))
                 ->description('Overall revenue')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->chart([15, 4, 10, 2, 12, 4, 12])

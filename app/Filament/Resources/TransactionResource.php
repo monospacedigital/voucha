@@ -66,7 +66,7 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('transaction_type')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('transaction_amount')
-                    ->money('USD')
+                    ->money('NGN')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transaction_date')
                     ->dateTime()
